@@ -1,9 +1,14 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 
-app.get("/test", (req, res) => {
+app.post("/register", (req, res) => {
   res.json("test ok");
 });
-
+app.post("/login", (req, res) => {
+  res.json("test ok");
+});
+console.log("fdafsd");
 app.listen(3000);
