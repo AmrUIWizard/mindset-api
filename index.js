@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const User = require("./models/User");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(cors());
@@ -14,13 +16,26 @@ mongoose.connect(
 
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
-  const userDoc = await User.create({ name, email, password });
-  res.json(userDoc);
-  // res.json("test ok");
+  try {
+    const userDoc = await User.create({ name, email, password });
+    res.json(userDoc);
+  } catch (error) {
+    res.status(400).json(error);
+  }
 });
-app.post("/login", (req, res) => {
-  res.json("test ok");
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const userDoc = await User.findOne({ email });
+  const passOk = bcrypt.compareSync(password, userDoc.password);
+  if (passOk) {
+    jwt.sign({ email });
+  } else {
+    return res.status(400).json({ message: "Invalid Password!" });
+  }
 });
+
+console.log(process.env.TESTING);
 console.log(process.env.TESTING);
 app.listen(3000);
 //test
