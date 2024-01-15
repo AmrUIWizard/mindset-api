@@ -11,7 +11,6 @@ const app = express();
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(express.json());
 app.use(cookieParser());
-var userName = "";
 
 mongoose.connect(
   `mongodb+srv://mongo:${process.env.DB_PASSWORD}@cluster0.3iafh6u.mongodb.net/?retryWrites=true&w=majority`
@@ -39,19 +38,21 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { name, email, password } = req.body;
   const userDoc = await User.findOne({ email });
-  userName = userDoc.name;
   if (userDoc === null) {
     return res.status(400).json({ message: "Invalid Email!" });
   }
   const passOk = bcrypt.compareSync(password, userDoc.password);
   if (passOk) {
     jwt.sign(
-      { email, name, id: userDoc._id },
+      { email, name: userDoc.name, id: userDoc._id },
       process.env.SECRET,
       {},
       (err, token) => {
         if (err) throw err;
-        res.cookie("token", token).json("ok");
+        res.cookie("token", token).json({
+          id: userDoc._id,
+          name: userDoc.name,
+        });
       }
     );
   } else {
@@ -65,6 +66,10 @@ app.get("/profile", (req, res) => {
     if (err) throw err;
     res.json(info);
   });
+});
+
+app.post("/logout", (req, res) => {
+  res.cookie("token", "").json("ok");
 });
 
 console.log(process.env.TESTING);
