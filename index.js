@@ -112,4 +112,3 @@ app.get("/post", async (req, res) => {
 console.log(process.env.TESTING);
 console.log(process.env.TESTING);
 app.listen(3000);
-//test
