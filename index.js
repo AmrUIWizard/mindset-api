@@ -109,6 +109,12 @@ app.get("/post", async (req, res) => {
   );
 });
 
+app.get("/post/:id", async (req, res) => {
+  const { id } = req.params;
+  const postDoc = await Post.findById(id).populate("author", ["name"]);
+  res.json(postDoc);
+});
+
 console.log(process.env.TESTING);
 console.log(process.env.TESTING);
 app.listen(3000);
