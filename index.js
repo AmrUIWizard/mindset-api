@@ -31,15 +31,6 @@ app.post("/register", async (req, res) => {
   try {
     const userDoc = await User.create({ name, email, password });
     res.json(userDoc);
-    jwt.sign(
-      { email, name, id: userDoc._id },
-      process.env.SECRET,
-      {},
-      (err, token) => {
-        if (err) throw err;
-        res.cookie("token", token).json("ok");
-      }
-    );
   } catch (error) {
     res.status(400).json(error);
   }
@@ -72,10 +63,12 @@ app.post("/login", async (req, res) => {
 
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
-  jwt.verify(token, process.env.SECRET, {}, (err, info) => {
-    if (err) throw err;
-    res.json(info);
-  });
+  if (token) {
+    jwt.verify(token, process.env.SECRET, {}, (err, info) => {
+      if (err) throw err;
+      res.json(info);
+    });
+  }
 });
 
 app.post("/logout", (req, res) => {
