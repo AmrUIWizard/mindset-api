@@ -14,7 +14,9 @@ const uploadMiddleware = multer({
 const fs = require("fs");
 
 const app = express();
-app.use(cors({ credentials: true, origin: "https://mindset-vdje.onrender.com" }));
+app.use(
+  cors({ credentials: true, origin: "https://mindset-vdje.onrender.com/"})
+);
 
 app.use(express.json());
 app.use(cookieParser());
